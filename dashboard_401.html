@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contro de Cuentas — Apto 401</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --surface2: #f0efe9;
+    --border: rgba(0,0,0,0.08);
+    --border-strong: rgba(0,0,0,0.15);
+    --text: #1a1917;
+    --text2: #6b6a65;
+    --text3: #9d9c97;
+    --accent: #2a78d6;
+    --accent-bg: #e8f1fb;
+    --juan: #2a78d6;
+    --juan-bg: #deeaf8;
+    --maria: #c97a00;
+    --maria-bg: #fdf0d5;
+    --success: #1a7a4a;
+    --success-bg: #e0f5ea;
+    --danger: #c53030;
+    --danger-bg: #fde8e8;
+    --radius: 10px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141412;
+      --surface: #1f1e1c;
+      --surface2: #252420;
+      --border: rgba(255,255,255,0.08);
+      --border-strong: rgba(255,255,255,0.15);
+      --text: #f0efe9;
+      --text2: #9d9c97;
+      --text3: #6b6a65;
+      --accent: #5a9de8;
+      --accent-bg: #1a2d45;
+      --juan: #5a9de8;
+      --juan-bg: #172338;
+      --maria: #e8a030;
+      --maria-bg: #2e2010;
+      --success-bg: #0d2a1a;
+      --danger-bg: #2a0f0f;
+    }
+  }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.5;
+  }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-mark {
+    width: 32px;
+    height: 32px;
+    background: var(--text);
+    color: var(--surface);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+
+  .logo-text { font-size: 15px; font-weight: 600; letter-spacing: -0.02em; }
+  .logo-sub { font-size: 12px; color: var(--text2); font-weight: 400; }
+
+  .header-right { display: flex; align-items: center; gap: 8px; }
+
+  .btn-refresh {
+    background: var(--surface2);
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    padding: 7px 14px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .btn-refresh:hover { background: var(--border); }
+
+  main { max-width: 900px; margin: 0 auto; padding: 1.5rem; }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 1.5rem;
+  }
+
+  .kpi {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem;
+  }
+
+  .kpi-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+  }
+
+  .kpi-value {
+    font-size: 22px;
+    font-weight: 600;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: -0.03em;
+    color: var(--text);
+  }
+
+  .kpi-value.juan { color: var(--juan); }
+  .kpi-value.maria { color: var(--maria); }
+
+  .kpi-delta {
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 2px;
+  }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 1.5rem; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+  }
+
+  .card-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 1.1rem;
+  }
+
+  /* Form */
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .form-row.three { grid-template-columns: 1fr 1fr 1fr; }
+
+  .field label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 5px;
+  }
+
+  .field input, .field select {
+    width: 100%;
+    padding: 8px 11px;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    background: var(--surface2);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.15s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  .field input:focus, .field select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(42, 120, 214, 0.12);
+  }
+
+  .btn-save {
+    width: 100%;
+    padding: 10px;
+    background: var(--text);
+    color: var(--surface);
+    border: none;
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 4px;
+    letter-spacing: -0.01em;
+    transition: opacity 0.15s;
+  }
+  .btn-save:hover { opacity: 0.85; }
+  .btn-save:disabled { opacity: 0.4; cursor: default; }
+
+  .status {
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    display: none;
+  }
+  .status.ok { background: var(--success-bg); color: var(--success); display: block; }
+  .status.err { background: var(--danger-bg); color: var(--danger); display: block; }
+  .status.loading { background: var(--accent-bg); color: var(--accent); display: block; }
+
+  /* Charts */
+  .chart-wrap { position: relative; height: 200px; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--text2);
+    font-weight: 500;
+  }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+  /* Table */
+  .table-wrap { overflow-x: auto; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th {
+    text-align: left;
+    padding: 6px 10px;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid var(--border);
+  }
+  tbody td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--surface2); }
+
+  .valor-cell { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; }
+
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 5px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .badge-j { background: var(--juan-bg); color: var(--juan); }
+  .badge-m { background: var(--maria-bg); color: var(--maria); }
+
+  .cat-pill {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 5px;
+    background: var(--surface2);
+    color: var(--text2);
+    border: 1px solid var(--border);
+  }
+
+  .empty-row { text-align: center; padding: 2rem !important; color: var(--text3); font-size: 13px; }
+
+  .sheet-link {
+    font-size: 12px;
+    color: var(--accent);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 500;
+  }
+  .sheet-link:hover { text-decoration: underline; }
+
+  @media (max-width: 640px) {
+    .kpi-grid { grid-template-columns: 1fr 1fr; }
+    .grid-2 { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    .form-row.three { grid-template-columns: 1fr; }
+    header { flex-wrap: wrap; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-mark">401</div>
+    <div>
+      <div class="logo-text">Contro de Cuentas</div>
+      <div class="logo-sub">Apartamento 401</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <a href="https://docs.google.com/spreadsheets/d/1Pfo0JM4OsMqEHOyoaYQq9V55oicgTgVCrCQ8cs8O6dg/edit" target="_blank" class="btn-refresh">
+      ↗ Ver hoja de cálculo
+    </a>
+    <button class="btn-refresh" onclick="cargarDatos()">↺ Actualizar</button>
+  </div>
+</header>
+
+<main>
+
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-label">Total registros</div>
+      <div class="kpi-value" id="k-total">—</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Total gastos</div>
+      <div class="kpi-value" id="k-sum">—</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Juan</div>
+      <div class="kpi-value juan" id="k-juan">—</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Maria</div>
+      <div class="kpi-value maria" id="k-maria">—</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Registrar gasto</div>
+      <div id="status-msg" class="status"></div>
+      <div class="form-row">
+        <div class="field">
+          <label>Fecha</label>
+          <input type="date" id="inp-fecha">
+        </div>
+        <div class="field">
+          <label>Usuario</label>
+          <select id="inp-usuario">
+            <option value="">Seleccionar...</option>
+            <option value="Juan">Juan</option>
+            <option value="Maria">Maria</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label>Categoría</label>
+          <select id="inp-cat">
+            <option value="">Seleccionar...</option>
+            <option value="Cotidianidad">Cotidianidad</option>
+            <option value="Servicios">Servicios</option>
+            <option value="Casa">Casa</option>
+            <option value="Tormenta">Tormenta</option>
+            <option value="Vacaciones">Vacaciones</option>
+            <option value="Entretenimiento">Entretenimiento</option>
+            <option value="Ahorro">Ahorro</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Valor (COP)</label>
+          <input type="number" id="inp-valor" placeholder="0" min="0">
+        </div>
+      </div>
+      <div class="field" style="margin-bottom: 12px">
+        <label>Descripción / Item</label>
+        <input type="text" id="inp-item" placeholder="ej. Meraki, Comunal, Gas...">
+      </div>
+      <button class="btn-save" id="btn-guardar" onclick="guardarGasto()">Guardar gasto</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Juan vs Maria</div>
+      <div class="chart-wrap">
+        <canvas id="chart-user" role="img" aria-label="Comparativo de gastos Juan vs Maria"></canvas>
+      </div>
+      <div class="legend" id="leg-user"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 1.5rem;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.1rem;">
+      <div class="card-title" style="margin-bottom:0">Gastos por categoría</div>
+    </div>
+    <div class="chart-wrap" style="height:180px">
+      <canvas id="chart-cat" role="img" aria-label="Gastos por categoría"></canvas>
+    </div>
+    <div class="legend" id="leg-cat"></div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.1rem;">
+      <div class="card-title" style="margin-bottom:0">Últimos registros</div>
+    </div>
+    <div class="table-wrap">
+      <table id="tabla">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Item</th>
+            <th>Valor</th>
+            <th>Usuario</th>
+            <th>Categoría</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="empty-row" colspan="5">Cargando datos...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const SHEET_ID = '1Pfo0JM4OsMqEHOyoaYQq9V55oicgTgVCrCQ8cs8O6dg';
+const CATS = ['Cotidianidad','Servicios','Casa','Tormenta','Vacaciones','Entretenimiento','Ahorro'];
+const CAT_COLORS = ['#2a78d6','#1baf7a','#c97a00','#4a3aa7','#e34948','#e87ba4','#eb6834'];
+let chartCat = null, chartUser = null;
+
+document.getElementById('inp-fecha').valueAsDate = new Date();
+
+function fmt(n) {
+  if (n === undefined || n === null || n === '') return '—';
+  return '$' + Math.round(Number(n)).toLocaleString('es-CO');
+}
+
+function showStatus(msg, type) {
+  const el = document.getElementById('status-msg');
+  el.textContent = msg;
+  el.className = 'status ' + type;
+}
+function hideStatus() {
+  document.getElementById('status-msg').className = 'status';
+}
+
+async function callClaude(prompt) {
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1000,
+      mcp_servers: [{ type: 'url', url: 'https://drivemcp.googleapis.com/mcp/v1', name: 'gdrive' }],
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  const data = await resp.json();
+  const textBlocks = (data.content || []).filter(b => b.type === 'text');
+  return textBlocks.map(b => b.text).join('\n');
+}
+
+async function guardarGasto() {
+  const fecha = document.getElementById('inp-fecha').value;
+  const usuario = document.getElementById('inp-usuario').value;
+  const cat = document.getElementById('inp-cat').value;
+  const valor = document.getElementById('inp-valor').value;
+  const item = document.getElementById('inp-item').value.trim();
+
+  if (!fecha || !usuario || !cat || !valor || !item) {
+    showStatus('Completa todos los campos antes de guardar.', 'err');
+    return;
+  }
+
+  const btn = document.getElementById('btn-guardar');
+  btn.disabled = true;
+  showStatus('Guardando...', 'loading');
+
+  try {
+    const prompt = `Append a new row to the Google Sheets spreadsheet with ID "${SHEET_ID}". Append this data as a new row at the end of the first sheet: fecha="${fecha}", item="${item}", valor=${valor}, usuario="${usuario}", categoría="${cat}". Use the Sheets API to append to range A:E.`;
+    await callClaude(prompt);
+    showStatus('✓ Gasto guardado correctamente.', 'ok');
+    document.getElementById('inp-item').value = '';
+    document.getElementById('inp-valor').value = '';
+    setTimeout(() => { hideStatus(); cargarDatos(); }, 2000);
+  } catch(e) {
+    showStatus('Error al guardar: ' + e.message, 'err');
+  }
+  btn.disabled = false;
+}
+
+async function cargarDatos() {
+  try {
+    const prompt = `Read all the data from Google Sheets spreadsheet ID "${SHEET_ID}". Get all rows from the first sheet (skip the header row). Return ONLY a JSON array, no markdown fences, no explanation. Each object has keys: fecha, item, valor, usuario, categoria. If no data rows exist, return [].`;
+    const raw = await callClaude(prompt);
+    let rows = [];
+    try {
+      rows = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    } catch(e) { rows = []; }
+    renderTabla(rows);
+    renderKPIs(rows);
+    renderCharts(rows);
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+function renderTabla(rows) {
+  const tbody = document.querySelector('#tabla tbody');
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td class="empty-row" colspan="5">Sin registros aún. Registra el primer gasto.</td></tr>';
+    return;
+  }
+  const recent = [...rows].reverse().slice(0, 20);
+  tbody.innerHTML = recent.map(r => {
+    const u = (r.usuario || '').trim().toLowerCase();
+    const isJuan = u.startsWith('j');
+    const badge = isJuan ? 'badge-j' : 'badge-m';
+    const name = isJuan ? 'Juan' : 'Maria';
+    return `<tr>
+      <td style="color:var(--text2); font-size:12px; white-space:nowrap">${r.fecha || ''}</td>
+      <td style="font-weight:500">${r.item || ''}</td>
+      <td class="valor-cell">${fmt(r.valor)}</td>
+      <td><span class="badge ${badge}">${name}</span></td>
+      <td><span class="cat-pill">${r.categoria || ''}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderKPIs(rows) {
+  const total = rows.reduce((s, r) => s + Number(r.valor || 0), 0);
+  const juan = rows.filter(r => (r.usuario || '').toLowerCase().startsWith('j')).reduce((s, r) => s + Number(r.valor || 0), 0);
+  const maria = rows.filter(r => (r.usuario || '').toLowerCase().startsWith('m')).reduce((s, r) => s + Number(r.valor || 0), 0);
+  document.getElementById('k-total').textContent = rows.length;
+  document.getElementById('k-sum').textContent = fmt(total);
+  document.getElementById('k-juan').textContent = fmt(juan);
+  document.getElementById('k-maria').textContent = fmt(maria);
+}
+
+function renderCharts(rows) {
+  const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const gridColor = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)';
+  const tickColor = isDark ? '#6b6a65' : '#9d9c97';
+
+  const catTotals = {};
+  CATS.forEach(c => catTotals[c] = 0);
+  rows.forEach(r => {
+    const key = CATS.find(k => k.toLowerCase() === (r.categoria || '').toLowerCase());
+    if (key) catTotals[key] += Number(r.valor || 0);
+  });
+
+  const catLabels = CATS.filter(c => catTotals[c] > 0);
+  const catData = catLabels.map(c => Math.round(catTotals[c]));
+  const catColorsUsed = catLabels.map(c => CAT_COLORS[CATS.indexOf(c)]);
+
+  if (chartCat) chartCat.destroy();
+  chartCat = new Chart(document.getElementById('chart-cat'), {
+    type: 'bar',
+    data: {
+      labels: catLabels,
+      datasets: [{ data: catData, backgroundColor: catColorsUsed, borderRadius: 5, borderSkipped: false }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ' ' + fmt(ctx.raw) } }
+      },
+      scales: {
+        x: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 11 } } },
+        y: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 11 }, callback: v => '$' + (v/1000000).toFixed(1) + 'M' } }
+      }
+    }
+  });
+
+  document.getElementById('leg-cat').innerHTML = catLabels.map((c, i) =>
+    `<div class="legend-item"><span class="legend-dot" style="background:${catColorsUsed[i]}"></span>${c}</div>`
+  ).join('');
+
+  const juan = rows.filter(r => (r.usuario || '').toLowerCase().startsWith('j')).reduce((s, r) => s + Number(r.valor || 0), 0);
+  const maria = rows.filter(r => (r.usuario || '').toLowerCase().startsWith('m')).reduce((s, r) => s + Number(r.valor || 0), 0);
+
+  if (chartUser) chartUser.destroy();
+  chartUser = new Chart(document.getElementById('chart-user'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Juan', 'Maria'],
+      datasets: [{ data: [Math.round(juan), Math.round(maria)], backgroundColor: ['#2a78d6', '#c97a00'], borderWidth: 3, borderColor: isDark ? '#1f1e1c' : '#ffffff' }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '68%',
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ' ' + fmt(ctx.raw) } }
+      }
+    }
+  });
+
+  document.getElementById('leg-user').innerHTML = `
+    <div class="legend-item"><span class="legend-dot" style="background:#2a78d6"></span>Juan — ${fmt(juan)}</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#c97a00"></span>Maria — ${fmt(maria)}</div>
+  `;
+}
+
+cargarDatos();
+</script>
+</body>
+</html>
