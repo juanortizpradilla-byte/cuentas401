@@ -170,10 +170,10 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-const SHEET_ID = '1Pfo0JM4OsMqEHOyoaYQq9V55oicgTgVCrCQ8cs8O6dg';
-const API_KEY  = 'AIzaSyDE6HM3n4rASjN5wn1zsOXm1uMyuYWKGsE';
+const SHEET_ID  = '1Pfo0JM4OsMqEHOyoaYQq9V55oicgTgVCrCQ8cs8O6dg';
+const API_KEY   = 'AIzaSyDE6HM3n4rASjN5wn1zsOXm1uMyuYWKGsE';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwANy4ZF5LEJXamkCeZmvcJ47gNyDJCJ8cpWM4EOCUs_QVEjYcvDYmiahk4odHYaUY0BQ/exec';
 const SHEET_NAME = 'Hoja1';
-const BASE_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}`;
 
 const CATS = ['Cotidianidad','Servicios','Casa','Tormenta','Vacaciones','Entretenimiento','Ahorro'];
 const CAT_COLORS = ['#2a78d6','#1baf7a','#c97a00','#4a3aa7','#e34948','#e87ba4','#eb6834'];
@@ -192,11 +192,11 @@ function showStatus(msg, type) {
 function hideStatus() { document.getElementById('status-msg').className = 'status'; }
 
 async function guardarGasto() {
-  const fecha    = document.getElementById('inp-fecha').value;
-  const usuario  = document.getElementById('inp-usuario').value;
-  const cat      = document.getElementById('inp-cat').value;
-  const valor    = document.getElementById('inp-valor').value;
-  const item     = document.getElementById('inp-item').value.trim();
+  const fecha   = document.getElementById('inp-fecha').value;
+  const usuario = document.getElementById('inp-usuario').value;
+  const cat     = document.getElementById('inp-cat').value;
+  const valor   = document.getElementById('inp-valor').value;
+  const item    = document.getElementById('inp-item').value.trim();
 
   if (!fecha || !usuario || !cat || !valor || !item) {
     showStatus('Completa todos los campos antes de guardar.', 'err'); return;
@@ -207,18 +207,12 @@ async function guardarGasto() {
   showStatus('Guardando...', 'loading');
 
   try {
-    const url = `${BASE_URL}/values/${encodeURIComponent(SHEET_NAME)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS&key=${API_KEY}`;
-    const res = await fetch(url, {
+    await fetch(SCRIPT_URL, {
       method: 'POST',
+      mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ values: [[fecha, item, Number(valor), usuario, cat]] })
+      body: JSON.stringify({ fecha, item, valor: Number(valor), usuario, categoria: cat })
     });
-
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error?.message || 'Error desconocido');
-    }
-
     showStatus('✓ Gasto guardado correctamente.', 'ok');
     document.getElementById('inp-item').value = '';
     document.getElementById('inp-valor').value = '';
@@ -231,7 +225,7 @@ async function guardarGasto() {
 
 async function cargarDatos() {
   try {
-    const url = `${BASE_URL}/values/${encodeURIComponent(SHEET_NAME)}?key=${API_KEY}`;
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}?key=${API_KEY}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error('No se pudo leer el Sheet');
     const data = await res.json();
